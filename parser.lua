@@ -26,13 +26,19 @@ function lib:matchToken()
     elseif #self.splitters > 0 and c:match("["..self.splitters.."]")
         and #tok > 0 then
       if (not self.discard_whitespace) or (c ~= " " and c ~= "\n") then
-        if tok:match("^["..self.splitters.."]+$") then
+        if tok:match("%"..c) then
           tok = tok .. c
         else
           self.i = self.i - 1
+          return tok, "word"
         end
+      elseif #tok > 0 then
+        return tok, "word"
       end
-      return tok, "word"
+    elseif #self.splitters > 0 and tok:match("["..self.splitters.."]")
+        and #tok > 0 then
+      self.i = self.i - 1
+      return tok, "splitter"
     else
       tok = tok .. c
       for n, v in ipairs(self.types) do
