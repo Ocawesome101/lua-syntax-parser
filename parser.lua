@@ -41,8 +41,13 @@ function lib:matchToken()
       return tok, "splitter"
     else
       tok = tok .. c
-      for n, v in ipairs(self.types) do
-        if (v.pattern and tok:match(v.pattern)) or tok == v.word then
+      for n, v in ipairs(self.words) do
+        if tok == v.word then
+          return tok, v.type
+        end
+      end
+      for n, v in ipairs(self.matches) do
+        if tok:match(v.pattern) then
           return tok, v.type
         end
       end
@@ -53,7 +58,7 @@ end
 
 function lib:addToken(ttype, pow, ptype)
   if ttype == "match" then
-    self.types[#self.types + 1] = {
+    self.matches[#self.matches + 1] = {
       pattern = pow,
       type = ptype or ttype
     }
@@ -63,9 +68,9 @@ function lib:addToken(ttype, pow, ptype)
   elseif ttype == "splitter" then
     self.splitters = self.splitters .. esc(pow)
   else
-    self.types[#self.types + 1] = {
+    self.words[#self.words + 1] = {
       word = pow,
-      type = ttype
+      type = ptype or ttype
     }
   end
 end
