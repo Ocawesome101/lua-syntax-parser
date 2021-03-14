@@ -8,35 +8,33 @@ end
 
 function lib:matchToken()
   local tok = ""
+  local splitter = "[" .. self.brackets .. self.splitters .. "]"
   if self.i >= #self.text then return nil end
   for i=self.i, #self.text, 1 do
     self.i = i + 1
     local c = self.text:sub(i,i)
-    if #self.splitters > 0 and c:match("["..self.splitters.."]")
-        and #tok == 0 then
+    if #self.splitters > 0 and c:match(splitter) and #tok == 0 then
       if (not self.discard_whitespace) or (c ~= " " and c ~= "\n") then
         if #self.brackets > 0 and c:match("["..self.brackets.."]") then
           return c, "bracket"
-        elseif self.text:sub(i+1,i+1):match("["..self.splitters.."]") then
+        elseif self.text:sub(i+1,i+1):match(splitter) then
           tok = c
         else
           return c, "splitter"
         end
       end
-    elseif #self.splitters > 0 and c:match("["..self.splitters.."]")
-        and #tok > 0 then
+    elseif #self.splitters > 0 and c:match(splitter) and #tok > 0 then
       if (not self.discard_whitespace) or (c ~= " " and c ~= "\n") then
         if tok:match("%"..c) then
           tok = tok .. c
         else
           self.i = self.i - 1
-          return tok, "word"
+          return tok, (tok:match(splitter) and "splitter") or "word"
         end
       elseif #tok > 0 then
-        return tok, "word"
+        return tok, (tok:match(splitter) and "splitter") or "word"
       end
-    elseif #self.splitters > 0 and tok:match("["..self.splitters.."]")
-        and #tok > 0 then
+    elseif #self.splitters > 0 and tok:match(splitter) and #tok > 0 then
       self.i = self.i - 1
       return tok, "splitter"
     else
@@ -77,7 +75,8 @@ end
 
 function lib.new(text)
   return setmetatable({
-    types={},
+    words={},
+    matches={},
     i=0,
     text=text or"",
     splitters="",
