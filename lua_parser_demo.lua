@@ -9,6 +9,7 @@ local new = parser.new(code)
 --incomplete Lua syntax
 new:addToken("splitter", " \n,\"'.<>&^|~:-+%=/*")
 new:addToken("bracket", "[](){}")
+new:addToken("keyword", "local")
 new:addToken("keyword", "function")
 new:addToken("keyword", "for")
 new:addToken("keyword", "in")

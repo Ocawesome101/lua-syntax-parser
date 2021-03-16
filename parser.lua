@@ -39,14 +39,20 @@ function lib:matchToken()
       return tok, "splitter"
     else
       tok = tok .. c
-      for n, v in ipairs(self.words) do
-        if tok == v.word then
-          return tok, v.type
+      if self.text:sub(i+1,i+1):match(splitter) then
+        for n, v in ipairs(self.words) do
+          if tok == v.word then
+            local otok = tok
+            tok = c
+            return otok, v.type
+          end
         end
-      end
-      for n, v in ipairs(self.matches) do
-        if tok:match(v.pattern) then
-          return tok, v.type
+        for n, v in ipairs(self.matches) do
+          if tok:match(v.pattern) then
+            local otok = tok
+            tok = c
+            return otok, v.type
+          end
         end
       end
     end
