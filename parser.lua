@@ -42,16 +42,12 @@ function lib:matchToken()
       if self.text:sub(i+1,i+1):match(splitter) then
         for n, v in ipairs(self.words) do
           if tok == v.word then
-            local otok = tok
-            tok = c
-            return otok, v.type
+            return tok, v.type
           end
         end
         for n, v in ipairs(self.matches) do
           if tok:match(v.pattern) then
-            local otok = tok
-            tok = c
-            return otok, v.type
+            return tok, v.type
           end
         end
       end
